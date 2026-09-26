@@ -783,6 +783,7 @@
     set('--p', t.primary); set('--pd', t.primaryDark); set('--ac', t.accent); set('--soft', t.soft);
     set('--hero', t.hero || t.primary);
     document.title = `${P().appName} · Embedded Insurance Demo`;
+    $('#demoNote').textContent = `BẢN DEMO minh họa – không phải ứng dụng chính thức của ${P().name.split(' – ')[0]}`;
   }
 
   function loadProfile(pid) {
@@ -800,7 +801,7 @@
   function fit() {
     const area = $('.device-area');
     const W = 418, H = 872;
-    const s = Math.min((area.clientWidth - 40) / W, (area.clientHeight - 40) / H, 1.2);
+    const s = Math.min((area.clientWidth - 40) / W, (area.clientHeight - 90) / H, 1.2);
     phone.style.transform = `scale(${s})`;
     wrap.style.width = W * s + 'px';
     wrap.style.height = H * s + 'px';

@@ -83,7 +83,8 @@ body.present .panel { margin-left: -320px; }
 }
 .p-btn.ghost { background: transparent; border: 1px solid var(--panel-line); color: var(--panel-text); font-weight: 500; }
 
-.device-area { flex: 1; display: grid; place-items: center; overflow: hidden; position: relative; }
+.device-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; overflow: hidden; position: relative; }
+.demo-note { font-size: 12px; font-weight: 600; color: #FCD34D; background: rgba(252, 211, 77, .1); border: 1px solid rgba(252, 211, 77, .3); padding: 6px 14px; border-radius: 20px; text-align: center; }
 .device-wrap { position: relative; }
 
 /* ============ PHONE FRAME ============ */
