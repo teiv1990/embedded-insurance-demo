@@ -6,6 +6,14 @@
   const $ = (s, r = document) => r.querySelector(s);
   const app = $('#app'), sheet = $('#sheet'), backdrop = $('#sheetBackdrop'), screenEl = $('#screen');
 
+  /* Nhúng trong landing page (?embed=1): chỉ còn màn hình app, báo trạng thái cho trang cha */
+  const EMBED = new URLSearchParams(location.search).get('embed') === '1';
+  if (EMBED) document.body.classList.add('embed');
+  function notifyParent(msg) {
+    if (!EMBED || window.parent === window) return;
+    try { window.parent.postMessage({ type: 'insurex-demo', ...msg }, location.origin); } catch (e) { /* trang cha khác origin */ }
+  }
+
   /* ---------------- helpers ---------------- */
   const ICONS = {
     back: '<path d="M15 18l-6-6 6-6"/>',
@@ -141,6 +149,7 @@
     if (BIND[S.screen]) BIND[S.screen]();
     if (!quiet) trackView();
     renderSteps();
+    notifyParent({ screen: S.screen });
   }
 
   function trackView() {
@@ -723,6 +732,7 @@
   };
 
   screenEl.addEventListener('click', e => {
+    if (!notifyParent.touched) { notifyParent.touched = true; notifyParent({ interact: true }); }
     if (e.target === backdrop) { closeSheet(); return; }
     const el = e.target.closest('[data-act]');
     if (!el || el.disabled) return;
@@ -799,6 +809,7 @@
   /* ---------------- device scaling & chrome ---------------- */
   const phone = $('#phone'), wrap = $('#deviceWrap');
   function fit() {
+    if (EMBED) return;
     const vw = window.innerWidth, vh = window.innerHeight;
     const native = vw < 600 || vh < 520;
     document.body.classList.toggle('native', native);
