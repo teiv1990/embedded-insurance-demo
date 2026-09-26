@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Embedded Insurance Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="stage">
+    <!-- PANEL ĐIỀU KHIỂN (người trình bày) -->
+    <aside class="panel" id="panel">
+      <div class="panel-brand">
+        <div class="panel-logo">EI</div>
+        <div>
+          <div class="panel-title">Embedded Insurance</div>
+          <div class="panel-sub">Demo luồng giao dịch ngân hàng</div>
+        </div>
+      </div>
+
+      <label class="p-label" for="partnerSelect">Đối tác demo</label>
+      <select id="partnerSelect" class="p-select"></select>
+      <div class="p-meta" id="partnerMeta"></div>
+
+      <div class="p-label">Điểm chạm bảo hiểm</div>
+      <div class="p-toggles" id="placementToggles"></div>
+
+      <div class="p-label">Kịch bản demo</div>
+      <ol class="p-steps" id="steps"></ol>
+
+      <div class="p-label">Sự kiện bảo hiểm <button class="p-link" id="clearLog">Xóa</button></div>
+      <div class="p-log" id="eventLog"></div>
+
+      <div class="p-actions">
+        <button class="p-btn" id="btnReset">↺ Làm mới demo</button>
+        <button class="p-btn ghost" id="btnPresent">Chế độ trình chiếu (P)</button>
+      </div>
+    </aside>
+
+    <!-- ĐIỆN THOẠI -->
+    <main class="device-area">
+      <div class="device-wrap" id="deviceWrap">
+        <div class="phone" id="phone">
+          <div class="phone-btn b1"></div><div class="phone-btn b2"></div><div class="phone-btn b3"></div><div class="phone-btn b4"></div>
+          <div class="screen" id="screen">
+            <div class="island"></div>
+            <div class="statusbar">
+              <span id="clock">9:41</span>
+              <span class="sb-icons">
+                <svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+                <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 11.5l2.3-2.6a3.3 3.3 0 00-4.6 0zM3.4 6.7a6.6 6.6 0 019.2 0l1.5-1.7a8.9 8.9 0 00-12.2 0zM.2 3.1a11.3 11.3 0 0115.6 0L16 3 14.6 1.4A13.4 13.4 0 001.4 1.4L0 3z"/></svg>
+                <span class="batt"><span></span></span>
+              </span>
+            </div>
+            <div class="app" id="app"></div>
+            <div class="sheet-backdrop" id="sheetBackdrop"></div>
+            <div class="sheet" id="sheet"></div>
+            <div class="toast" id="toast"></div>
+            <div class="home-ind"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ===== PROFILE ĐỐI TÁC: thêm 1 dòng cho mỗi ngân hàng ===== -->
+  <script src="profiles/acb.js"></script>
+  <script src="profiles/template.js"></script>
+  <!-- ========================================================== -->
+
+  <script src="js/app.js"></script>
+</body>
+</html>
