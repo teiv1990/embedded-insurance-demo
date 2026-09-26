@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="robots" content="noindex, nofollow">
   <title>Embedded Insurance Demo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,6 +19,7 @@
           <div class="panel-title">Embedded Insurance</div>
           <div class="panel-sub">Demo luồng giao dịch ngân hàng</div>
         </div>
+        <button class="panel-close" id="btnPanelClose" aria-label="Đóng">✕</button>
       </div>
 
       <label class="p-label" for="partnerSelect">Đối tác demo</label>
@@ -39,6 +40,7 @@
         <button class="p-btn ghost" id="btnPresent">Chế độ trình chiếu (P)</button>
       </div>
     </aside>
+    <div class="panel-scrim" id="panelScrim"></div>
 
     <!-- ĐIỆN THOẠI -->
     <main class="device-area">
@@ -63,7 +65,7 @@
           </div>
         </div>
       </div>
-      <div class="demo-note" id="demoNote">Bản demo minh họa</div>
+      <div class="demo-note"><span id="demoNote">Bản demo minh họa</span><button class="note-btn" id="btnPanel">⚙ Điều khiển</button></div>
     </main>
   </div>
 

@@ -799,6 +799,12 @@
   /* ---------------- device scaling & chrome ---------------- */
   const phone = $('#phone'), wrap = $('#deviceWrap');
   function fit() {
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const native = vw < 600 || vh < 520;
+    document.body.classList.toggle('native', native);
+    document.body.classList.toggle('drawer', native || vw < 960);
+    if (!document.body.classList.contains('drawer')) setPanel(false);
+    if (native) { phone.style.transform = ''; wrap.style.width = ''; wrap.style.height = ''; return; }
     const area = $('.device-area');
     const W = 418, H = 872;
     const s = Math.min((area.clientWidth - 40) / W, (area.clientHeight - 90) / H, 1.2);
@@ -819,6 +825,10 @@
   $('#clearLog').addEventListener('click', () => { logs = []; renderLog(); });
   const togglePresent = () => { document.body.classList.toggle('present'); setTimeout(fit, 320); };
   $('#btnPresent').addEventListener('click', togglePresent);
+  function setPanel(open) { document.body.classList.toggle('panel-open', open); }
+  $('#btnPanel').addEventListener('click', () => setPanel(true));
+  $('#btnPanelClose').addEventListener('click', () => setPanel(false));
+  $('#panelScrim').addEventListener('click', () => setPanel(false));
   document.addEventListener('keydown', e => {
     const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
     if (S.screen === 'otp' && !typing) {
@@ -834,4 +844,5 @@
   const qp = new URLSearchParams(location.search).get('partner');
   loadProfile(qp || store.get('ei-demo-partner') || PROFILE_IDS[0]);
   fit(); clock(); setInterval(clock, 15000);
+  requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.add('ready')));
 })();
