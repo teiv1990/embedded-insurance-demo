@@ -34,3 +34,70 @@
 .box .lbl { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
 .box .muted { color: var(--muted); }
 .r2 { display: flex; justify-content: space-between; gap: 10px; }
+
+/* ===== Xe Demo ===== */
+.map { position: relative; height: 330px; overflow: hidden; background: radial-gradient(circle at 70% 20%, #D5F0E3 0 60px, transparent 61px), radial-gradient(circle at 15% 80%, #D5F0E3 0 44px, transparent 45px), #E8EEF3; }
+.map.short { height: 260px; }
+.map-road { position: absolute; background: #fff; box-shadow: 0 0 0 1px #D8E0E8; }
+.map-road.r1 { left: -10%; right: -10%; top: 46%; height: 14px; transform: rotate(-8deg); }
+.map-road.r2 { top: -10%; bottom: -10%; left: 38%; width: 12px; transform: rotate(12deg); }
+.map-road.r3 { left: -10%; right: -10%; top: 74%; height: 10px; transform: rotate(6deg); }
+.map-me { position: absolute; left: 50%; top: 44%; transform: translate(-50%, -100%); color: var(--p); filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .2)); }
+.map-car { position: absolute; left: 30%; top: 40%; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; background: var(--p); color: #fff; box-shadow: 0 0 0 8px color-mix(in srgb, var(--p) 25%, transparent); animation: map-drive 3.5s ease-in-out infinite alternate; }
+@keyframes map-drive { to { left: 58%; top: 30%; } }
+.map-top { position: absolute; top: 54px; left: 16px; right: 16px; display: flex; justify-content: space-between; }
+.ride-sheet { position: relative; margin-top: -24px; border-radius: 22px 22px 0 0; background: var(--bg); }
+.where { display: flex; align-items: center; gap: 10px; height: 46px; padding: 0 14px; margin-bottom: 10px; border-radius: 14px; background: #fff; font-weight: 600; color: var(--muted); box-shadow: 0 6px 16px rgba(0, 0, 0, .06); }
+.place { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 4px; text-align: left; border-bottom: 1px solid var(--line); }
+.place b { display: block; font-size: 14px; }
+.place small, .ride small, .driver small, .remind small { display: block; font-size: 12px; color: var(--muted); }
+.pl-ic { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--soft); color: var(--p); }
+.pl-km { font-size: 12px; color: var(--muted); }
+.route .rt { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; }
+.route small { display: block; font-size: 11.5px; color: var(--muted); }
+.route b { font-size: 13.5px; }
+.route .dot { flex-shrink: 0; width: 10px; height: 10px; margin-top: 5px; border-radius: 50%; }
+.route .dot.a { background: var(--p); }
+.route .dot.b { background: var(--err); }
+.rt-meta { margin-top: 6px; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 12px; color: var(--muted); }
+.rides { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+.ride { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px; border-radius: 14px; border: 1.5px solid var(--line); background: #fff; text-align: left; }
+.ride.on { border-color: var(--p); background: var(--soft); }
+.rd-ic { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--soft); color: var(--p); }
+.driver { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.driver .avatar { background: var(--soft); color: var(--p); }
+.note-box { display: flex; gap: 8px; align-items: flex-start; margin: 12px 0; padding: 10px 12px; border-radius: 12px; background: var(--soft); font-size: 12.5px; line-height: 1.45; }
+.note-box svg { flex-shrink: 0; margin-top: 1px; color: var(--p); }
+
+/* ===== Travel Demo ===== */
+.fl-route { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.fl-route b { display: block; font-size: 24px; font-weight: 800; }
+.fl-route small { font-size: 12px; color: var(--muted); }
+.fl-route div:last-child { text-align: right; }
+.fl-line { position: relative; flex: 1; display: grid; place-items: center; color: var(--p); }
+.fl-line::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 1.5px dashed var(--line); }
+.fl-line svg { position: relative; background: var(--card); padding: 0 4px; transform: rotate(45deg); }
+.fl { display: flex; align-items: center; gap: 8px; width: 100%; margin-bottom: 10px; text-align: left; border: 1.5px solid transparent; }
+.fl:active { border-color: var(--p); }
+.fl-t b { display: block; font-size: 17px; }
+.fl-t small, .fl-mid small { font-size: 11px; color: var(--muted); }
+.fl-mid { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.fl-mid i { width: 100%; border-top: 1.5px solid var(--line); }
+.fl-p { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; min-width: 88px; }
+.fl-p b { color: var(--p); font-size: 14px; }
+.fl-p em { font-style: normal; font-size: 10.5px; font-weight: 700; padding: 2px 6px; border-radius: 6px; background: var(--soft); color: var(--p); }
+.boarding { margin-bottom: 12px; border-top: 4px solid var(--p); }
+
+/* ===== Trả góp Demo ===== */
+.amt-grid.terms { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.remind { display: flex; gap: 10px; align-items: center; margin: 12px 0; }
+.remind svg { color: var(--p); flex-shrink: 0; }
+
+/* ===== Chứng khoán Demo ===== */
+.wl-r { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; }
+.wl-r + .wl-r { border-top: 1px solid var(--line); }
+.wl-r small { display: block; font-size: 11.5px; color: var(--muted); }
+.wl-p { text-align: right; }
+.wl-p .up { color: var(--ok); font-weight: 600; }
+.wl-p .down { color: var(--err); font-weight: 600; }
+.src .si svg { color: var(--p); }
