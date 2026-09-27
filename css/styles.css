@@ -10,7 +10,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; }
 body {
-  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+  font-family: 'Google Sans Flex', system-ui, -apple-system, sans-serif;
   background: radial-gradient(1200px 700px at 70% 20%, #1A2450 0%, var(--stage-bg) 60%);
   color: var(--panel-text);
   overflow: hidden;
@@ -72,7 +72,7 @@ body.present .panel { margin-left: -320px; }
   background: #0E1429; border: 1px solid var(--panel-line); border-radius: 10px; padding: 8px 10px;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
-.p-log .empty { color: var(--panel-muted); font-family: 'Be Vietnam Pro', sans-serif; }
+.p-log .empty { color: var(--panel-muted); font-family: 'Google Sans Flex', sans-serif; }
 .p-log div { padding: 2px 0; }
 .p-log .t { color: var(--panel-muted); margin-right: 6px; }
 .p-log .ev { color: #C4B5FD; }
