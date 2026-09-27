@@ -32,6 +32,11 @@
     { dep: '19:20', arr: '20:40', price: 1190000, tag: 'Rẻ nhất' },
   ];
   const TAX = 250000;
+  // Ngày bay tính từ hôm nay để demo không bao giờ đặt vé trong quá khứ; bảo hiểm có hiệu lực từ ngày bay
+  const FLIGHT_DATE = new Date(Date.now() + 18 * 86400000);
+  const weekday = FLIGHT_DATE.toLocaleDateString('vi-VN', { weekday: 'long' });
+  const dm = `${String(FLIGHT_DATE.getDate()).padStart(2, '0')}/${String(FLIGHT_DATE.getMonth() + 1).padStart(2, '0')}`;
+  const dmy = `${dm}/${FLIGHT_DATE.getFullYear()}`;
   const addons = (S) => (S.delay ? PRODUCTS.delay.plans[0].premium : 0) + (S.bag ? PRODUCTS.baggage.plans[0].premium : 0);
 
   DemoKit.createApp({
@@ -62,7 +67,7 @@
                 <div class="lbl" style="margin-bottom:10px">${svg('plane', 16)} Vé máy bay</div>
                 ${route}
                 <div class="rows" style="margin-top:10px">
-                  <div class="r"><span>Ngày đi</span><span>Thứ Năm, 15/10/2026</span></div>
+                  <div class="r"><span>Ngày đi</span><span>${weekday[0].toUpperCase() + weekday.slice(1)}, ${dmy}</span></div>
                   <div class="r"><span>Hành khách</span><span>1 người lớn · Phổ thông</span></div>
                 </div>
                 <button class="btn primary" style="margin-top:12px" data-act="go" data-to="flights">Tìm chuyến bay</button>
@@ -84,7 +89,7 @@
           <div class="scr">
             ${c.nav('Hà Nội → Đà Nẵng')}
             <div class="body pad">
-              <div class="lbl">Thứ Năm, 15/10 · 1 người lớn</div>
+              <div class="lbl">${weekday[0].toUpperCase() + weekday.slice(1)}, ${dm} · 1 người lớn</div>
               ${FLIGHTS.map((x, i) => `
                 <button class="card fl" data-act="pickFlight" data-i="${i}">
                   <span class="fl-t"><b>${x.dep}</b><small>HAN</small></span>
@@ -102,7 +107,7 @@
           <div class="scr">
             ${c.nav('Thông tin đặt vé')}
             <div class="body pad">
-              <div class="card">${route}<div class="rows" style="margin-top:10px"><div class="r"><span>Chuyến bay</span><span>${f().dep} – ${f().arr} · 15/10</span></div></div></div>
+              <div class="card">${route}<div class="rows" style="margin-top:10px"><div class="r"><span>Chuyến bay</span><span>${f().dep} – ${f().arr} · ${dm}</span></div></div></div>
               <div class="card" style="margin-top:12px">
                 <div class="autofill">${svg('wand', 16)} ${c.cfg.autofillText}</div>
                 <div class="rows"><div class="r"><span>Hành khách</span><span>NGUYỄN MINH ANH</span></div><div class="r"><span>Hành lý ký gửi</span><span>20 kg</span></div></div>
@@ -132,7 +137,7 @@
                 <div class="succ-d">Mã đặt chỗ ${b.pnr} · Vé điện tử đã gửi qua email</div>
               </div>
               <div class="pad" style="padding-top:0">
-                <div class="card boarding">${route}<div class="rows" style="margin-top:10px"><div class="r"><span>Khởi hành</span><span>${b.dep} · 15/10/2026</span></div><div class="r"><span>Hành khách</span><span>NGUYỄN MINH ANH</span></div></div></div>
+                <div class="card boarding">${route}<div class="rows" style="margin-top:10px"><div class="r"><span>Khởi hành</span><span>${b.dep} · ${dmy}</span></div><div class="r"><span>Hành khách</span><span>NGUYỄN MINH ANH</span></div></div></div>
                 ${b.policies.length ? `<div class="card receipt">${b.policies.map(c.policyRow).join('')}</div>` : ''}
                 ${c.owns('medical') ? '' : `<div class="xsell"><div class="xs-h"><span class="spark">${svg('spark', 18)}</span>Chuẩn bị cho chuyến đi Đà Nẵng</div>${c.xsCard('medical', 'Sau đặt vé')}</div>`}
               </div>
@@ -153,8 +158,8 @@
         const total = fl.price + TAX + addons(S);
         c.processing('Đang xuất vé…', () => {
           const policies = [];
-          if (S.delay) policies.push(c.createPolicy('delay', 0, 'Trang đặt vé'));
-          if (S.bag) policies.push(c.createPolicy('baggage', 0, 'Trang đặt vé'));
+          if (S.delay) policies.push(c.createPolicy('delay', 0, 'Trang đặt vé', FLIGHT_DATE));
+          if (S.bag) policies.push(c.createPolicy('baggage', 0, 'Trang đặt vé', FLIGHT_DATE));
           S.booking = { pnr: `TD${c.rnd(6)}`, dep: fl.dep, total, policies };
           S.delay = false; S.bag = false;
           S.stack = [];

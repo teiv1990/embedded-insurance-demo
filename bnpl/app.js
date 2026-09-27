@@ -12,7 +12,7 @@
       name: 'Bảo hiểm Thiết bị trả góp', short: 'Thiết bị', icon: 'phone', color: '#4338CA',
       tagline: 'Sửa, thay máy khi rơi vỡ, mất cắp trong thời gian trả góp',
       offerText: 'Bảo vệ chiếc điện thoại bạn đang trả góp', badge: 'Từ 199.000đ',
-      plans: [{ name: 'Theo kỳ hạn trả góp', premium: 199000, coverage: PRICE, term: 365 }],
+      plans: [{ name: '12 tháng', premium: 199000, coverage: PRICE, term: 365 }],
       benefits: ['Sửa hoặc thay máy khi rơi vỡ, vào nước', 'Bồi thường khi mất cắp có báo công an', 'Không gián đoạn lịch trả góp khi máy hỏng'],
     },
     loan: {
@@ -43,7 +43,7 @@
     autofillText: 'Tự động điền từ hồ sơ vay đã xác thực – không cần nhập lại',
     products: PRODUCTS,
     state: () => ({ term: 12, device: false, loanIns: false, contract: null }),
-    payAmount: (c) => monthly(c.S) + insTotal(c.S),
+    payAmount: (c) => DOWN + insTotal(c.S), // hôm nay: trả trước + phí bảo hiểm đã chọn
     onPaid: (c) => {
       const { S } = c;
       const policies = [];
@@ -74,7 +74,7 @@
                 <div class="amt-grid terms">${TERMS.map((t) => `<button class="amt ${S.term === t ? 'on' : ''}" data-act="term" data-t="${t}"><b>${t} tháng</b><small>${vnd(Math.ceil(LOAN / t / 1000) * 1000)}/tháng</small></button>`).join('')}</div>
               </div>
             </div>
-            <div class="footer"><button class="btn primary" data-act="go" data-to="review">Tiếp tục</button></div>
+            <div class="footer"><button class="btn primary" data-act="toReview">Tiếp tục</button></div>
           </div>`,
 
         review: () => {
@@ -95,12 +95,12 @@
               ${c.offer('device', S.device, 'toggleDevice')}
               ${c.offer('loan', S.loanIns, 'toggleLoan')}
               <div class="card" style="margin-top:12px"><div class="rows">
-                <div class="r"><span>Kỳ góp đầu tiên</span><span>${vnd(monthly(S))}</span></div>
-                ${ins ? `<div class="r"><span>Phí bảo hiểm (trả cùng kỳ đầu)</span><span>${vnd(ins)}</span></div>` : ''}
-                <div class="r total"><span>Thanh toán kỳ đầu</span><span>${vnd(monthly(S) + ins)}</span></div>
+                <div class="r"><span>Trả trước</span><span>${vnd(DOWN)}</span></div>
+                ${ins ? `<div class="r"><span>Phí bảo hiểm</span><span>${vnd(ins)}</span></div>` : ''}
+                <div class="r total"><span>Thanh toán hôm nay</span><span>${vnd(DOWN + ins)}</span></div>
               </div></div>
             </div>
-            <div class="footer"><button class="btn primary" data-act="startPin">Ký hợp đồng điện tử</button></div>
+            <div class="footer"><button class="btn primary" data-act="startPin">Ký hợp đồng & trả trước</button></div>
           </div>`;
         },
 
@@ -129,6 +129,7 @@
 
     actions: (c) => ({
       term: (d) => { c.S.term = Number(d.t); c.render(true); },
+      toReview: () => { c.S.device = false; c.S.loanIns = false; c.go('review'); }, // bảo hiểm luôn chưa chọn khi vào màn xác nhận
       toggleDevice: () => { c.S.device = !c.S.device; c.render(true); },
       toggleLoan: () => { c.S.loanIns = !c.S.loanIns; c.render(true); },
     }),

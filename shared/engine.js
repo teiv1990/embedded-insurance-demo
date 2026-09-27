@@ -99,10 +99,10 @@
 
     const nav = (title) => `<div class="nav"><button class="nav-btn" data-act="back">${svg('back', 24, 2.4)}</button><div class="nav-title">${esc(title)}</div><button class="nav-btn" data-act="home">${svg('home', 22)}</button></div>`;
 
-    function createPolicy(productId, planIdx, src) {
+    function createPolicy(productId, planIdx, src, startDate) {
       const pr = prod(productId);
       const plan = pr.plans[planIdx];
-      const start = new Date();
+      const start = startDate ? new Date(startDate) : new Date();
       const end = new Date(start.getTime() + plan.term * 86400000);
       const pol = { productId, planIdx, no: `IX${start.getFullYear()}-${rnd(8)}`, start, end, src, premium: plan.premium };
       S.policies.push(pol);
@@ -350,7 +350,7 @@
       }
       screenEl.style.setProperty('--sbg', S.screen === 'product' ? prod(S.product).color : 'var(--pd)');
       if (BIND[S.screen]) BIND[S.screen]();
-      notify({ screen: S.screen });
+      notify({ screen: S.screen === 'pin' && S.pinFor === 'insurance' ? 'pin-ins' : S.screen }); // PIN mua bảo hiểm thuộc bước mua, không phải bước thanh toán
     }
 
     screenEl.addEventListener('click', (e) => {

@@ -27,10 +27,10 @@
     },
   };
   const WATCH = [
-    { s: 'DMA', n: 'Công ty Demo A', p: '28,45', ch: '+1,25%', up: true },
-    { s: 'DMB', n: 'Ngân hàng Demo B', p: '19,80', ch: '+0,51%', up: true },
-    { s: 'DMC', n: 'Thép Demo C', p: '31,10', ch: '-0,64%', up: false },
-    { s: 'DMD', n: 'Bán lẻ Demo D', p: '64,20', ch: '+2,07%', up: true },
+    { s: 'DEMOA', n: 'Công ty Demo A', p: '28,45', ch: '+1,25%', up: true },
+    { s: 'DEMOB', n: 'Ngân hàng Demo B', p: '19,80', ch: '+0,51%', up: true },
+    { s: 'DEMOC', n: 'Thép Demo C', p: '31,10', ch: '-0,64%', up: false },
+    { s: 'DEMOD', n: 'Bán lẻ Demo D', p: '64,20', ch: '+2,07%', up: true },
   ];
   const premiumOf = (c) => (c.S.addon && !c.owns('cyber') ? PRODUCTS.cyber.plans[0].premium : 0);
 
@@ -64,15 +64,15 @@
           <div class="scr fade">
             <div class="body">
               <div class="home-hero">
-                <div class="home-top"><div class="avatar">MA</div><div><div class="hello">Tài khoản 068C123456</div><div class="uname">NGUYỄN MINH ANH</div></div><div class="spacer"></div><div class="logo-chip">CK</div></div>
+                <div class="home-top"><div class="avatar">MA</div><div><div class="hello">Tài khoản DEMO123456</div><div class="uname">NGUYỄN MINH ANH</div></div><div class="spacer"></div><div class="logo-chip">CK</div></div>
               </div>
               <div class="acct-card">
                 <div class="acct-row"><div><div class="acct-label">Tổng tài sản</div><div class="acct-no">Lãi/lỗ hôm nay <b style="color:var(--ok)">+1.842.000đ (+1,24%)</b></div></div></div>
                 <div class="acct-bal">${fmt(140000000 + S.cash)} <small>đ</small></div>
-                <div class="acct-links"><button data-act="go" data-to="deposit">Nạp tiền</button><button data-act="toast">Đặt lệnh</button></div>
+                <div class="acct-links"><button data-act="startDeposit">Nạp tiền</button><button data-act="toast">Đặt lệnh</button></div>
               </div>
               <div class="quick">
-                <button class="q-item" data-act="go" data-to="deposit"><span class="q-ic">${svg('wallet', 24)}</span>Nạp tiền</button>
+                <button class="q-item" data-act="startDeposit"><span class="q-ic">${svg('wallet', 24)}</span>Nạp tiền</button>
                 <button class="q-item" data-act="toast"><span class="q-ic">${svg('chart', 24)}</span>Đặt lệnh</button>
                 <button class="q-item" data-act="toast"><span class="q-ic">${svg('card', 24)}</span>Ký quỹ</button>
                 <button class="q-item" data-act="go" data-to="hub"><span class="q-ic">${svg('shield', 24)}</span>Bảo hiểm</button>
@@ -101,7 +101,7 @@
             ${c.nav('Xác nhận nạp tiền')}
             <div class="body pad">
               <div class="card">
-                <div class="amt-hero"><div class="al">Nạp vào tài khoản 068C123456</div><div class="av">${vnd(S.amount)}</div></div>
+                <div class="amt-hero"><div class="al">Nạp vào tài khoản DEMO123456</div><div class="av">${vnd(S.amount)}</div></div>
                 <div class="rows"><div class="r"><span>Nguồn tiền</span><span>Ngân hàng Demo · **** 6868</span></div><div class="r"><span>Phí</span><span style="color:var(--ok)">Miễn phí</span></div></div>
               </div>
               ${c.owns('cyber') ? '' : c.offer('cyber', S.addon, 'toggleAddon')}
@@ -141,6 +141,7 @@
     },
 
     actions: (c) => ({
+      startDeposit: () => { c.S.addon = false; c.go('deposit'); }, // mỗi lần nạp: bảo hiểm luôn chưa chọn
       amt: (d) => { c.S.amount = Number(d.v); c.render(true); },
       toggleAddon: () => { c.S.addon = !c.S.addon; c.render(true); },
     }),

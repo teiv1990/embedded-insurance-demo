@@ -115,7 +115,7 @@
               </div>
               <div class="pad ride-sheet">
                 <div class="lbl">Đang di chuyển tới ${esc(t.place.name)}</div>
-                <div class="card driver"><div class="avatar">TB</div><span style="flex:1"><b>Trần Văn B</b><small>${r.name} · 29A1-234.56 · ${svg('star', 12)} 4,9</small></span><button class="icon-btn" data-act="toast" data-msg="Chức năng chỉ minh họa">${svg('phone', 20)}</button></div>
+                <div class="card driver"><div class="avatar">TB</div><span style="flex:1"><b>Trần Văn B</b><small>${r.name} · 99Z9-999.99 (demo) · ${svg('star', 12)} 4,9</small></span><button class="icon-btn" data-act="toast" data-msg="Chức năng chỉ minh họa">${svg('phone', 20)}</button></div>
                 ${t.policy ? c.policyRow(t.policy) : '<div class="note-box">Chuyến đi này chưa có bảo hiểm.</div>'}
               </div>
             </div>
