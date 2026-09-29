@@ -13,7 +13,7 @@ Giao diện điện thoại bấm được thật, mô phỏng luồng **chuyể
 python3 -m http.server 5173
 ```
 
-Rồi mở http://localhost:5173. Chọn đối tác trực tiếp qua link: `http://localhost:5173/?partner=acb`
+Rồi mở http://localhost:5173. Chọn đối tác trực tiếp qua link: `http://localhost:5173/?partner=<ma-doi-tac>`
 
 Hoặc mở thẳng file `index.html` bằng trình duyệt (không cần server).
 
