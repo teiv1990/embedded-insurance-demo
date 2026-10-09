@@ -4,7 +4,7 @@
  * Các màn còn lại (thành công, sản phẩm, GCN, mục Bảo hiểm) dùng màn hình chung, đổi kiểu qua css/skin-sacombank.css.
  */
 (window.SKINS = window.SKINS || {}).sacombank = function (K) {
-  const { P, INS, prod, svg, esc, fmt, vnd, bankName, initials, confirmOffer } = K;
+  const { P, INS, prod, svg, esc, fmt, vnd, bankName, initials, confirmOffer, addonCharge, addonBlocked, offerPrice, offerExtras, confirmHint } = K;
 
   Object.assign(K.ICONS, {
     cardF: '<rect x="2" y="5" width="20" height="14" rx="2" fill="currentColor" stroke="none"/><rect x="2" y="8.6" width="20" height="2.8" fill="#fff" stroke="none" opacity=".9"/><rect x="4.5" y="14" width="5.5" height="2.2" rx=".6" fill="#fff" stroke="none"/>',
@@ -120,7 +120,7 @@
   /* ---------- Xác nhận giao dịch (bottom sheet trên màn chuyển tiền) ---------- */
   function confirm(quiet) {
     const S = K.S, p = P(), f = S.form, o = confirmOffer();
-    const prem = o && S.addon ? o.plan.premium : 0;
+    const prem = addonCharge();
     return `
     <div class="scr sc-tf sc-cf ${quiet ? 'still' : ''}">
       <div class="sc-cf-bg" aria-hidden="true">${transferInner('sc-bgbody')}</div>
@@ -148,16 +148,17 @@
               </div>
             </div>
             <div class="of">
-              <div class="op">Phí chỉ <b>${money(o.plan.premium)}</b> / ${o.plan.term} ngày</div>
+              <div class="op">${offerPrice(o)}</div>
               <button class="sw ${S.addon ? 'on' : ''}" data-act="toggleAddon" aria-label="Thêm bảo hiểm"></button>
             </div>
+            ${offerExtras(o)}
             <button class="more" data-act="addonInfo">Xem quyền lợi chi tiết</button>
             <div class="prov">Cung cấp bởi ${esc(INS().provider)} · ${esc(INS().distributorNote || '')}</div>
           </div>` : ''}
-          ${prem ? `<div class="r"><span>Phí bảo hiểm</span><span>${money(prem)}</span></div>` : ''}
+          ${o && S.addon ? `<div class="r"><span>Phí bảo hiểm</span><span>${money(prem)}${o.promo ? ' (tặng kỳ đầu)' : ''}</span></div>` : ''}
         </div>
         <div class="sc-rows sc-total"><div class="r total"><span>Tổng số tiền</span><span>${money(f.amount + prem)}</span></div></div>
-        <div class="sc-sheet-f"><button class="btn primary" data-act="doConfirm">Xác nhận</button></div>
+        <div class="sc-sheet-f">${confirmHint()}<button class="btn primary" data-act="doConfirm" ${addonBlocked() ? 'disabled' : ''}>Xác nhận</button></div>
       </div>
     </div>`;
   }
@@ -176,11 +177,11 @@
         ${item('Nhà bảo hiểm:', esc(INS().provider))}
         ${item('Tổng số tiền:', 'VND ' + fmt(plan.premium))}`;
     } else {
-      const o = confirmOffer(), prem = o && S.addon ? o.plan.premium : 0;
+      const o = confirmOffer(), prem = addonCharge(), withIns = o && S.addon;
       list = `<div class="ah">${app}: Chuyển tiền</div>
         ${item('Từ tài khoản/thẻ:', esc(p.customer.account))}
         ${item('Người thụ hưởng:', `${esc(f.account)}<br>${esc(f.name)}`)}
-        ${prem ? item('Bảo hiểm kèm theo:', `${esc(o.pr.name)}<br>VND ${fmt(prem)}`) : ''}
+        ${withIns ? item('Bảo hiểm kèm theo:', `${esc(o.pr.name)}<br>VND ${fmt(prem)}${o.promo ? ` (${esc(o.promo.label.toLowerCase())})` : ''}`) : ''}
         ${item('Tổng số tiền:', 'VND ' + fmt(f.amount + prem))}
         ${item('Diễn giải:', esc(f.note || '—'))}`;
     }

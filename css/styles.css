@@ -509,3 +509,11 @@ body.embed .device-wrap { width: 390px !important; height: 844px !important; }
 body.embed .phone { transform: none !important; width: 390px; height: 844px; padding: 0; border-radius: 0; background: none; box-shadow: none; }
 body.embed .phone-btn { display: none; }
 body.embed .screen { border-radius: 0; }
+
+/* Ưu đãi tặng kỳ đầu + ô tích đồng ý ở gợi ý bảo hiểm màn xác nhận */
+.promo-tag { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #FFF1E6; color: #C2410C; font-size: 11.5px; font-weight: 700; }
+.offer .op s { color: var(--muted); font-weight: 500; }
+.promo-note { margin-top: 8px; font-size: 11.5px; line-height: 1.45; color: var(--muted); }
+.addon-consent { width: 100%; margin-top: 10px; padding: 10px; border-radius: 12px; background: #fff; border: 1.5px solid var(--line); font-size: 12.5px; color: var(--text); }
+.addon-consent.on { border-color: var(--p); }
+.confirm-hint { margin-bottom: 8px; font-size: 12px; line-height: 1.4; color: #C2410C; text-align: center; }

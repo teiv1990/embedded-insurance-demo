@@ -64,7 +64,26 @@
 
     placements: {
       home:    { enabled: true, productId: 'health' },
-      confirm: { enabled: true, productId: 'cyber', minAmount: 0, defaultChecked: false },
+      confirm: {
+        enabled: true, productId: 'cyber', minAmount: 0, defaultChecked: false,
+        // Chương trình tặng kỳ đầu (số liệu, điều khoản giả định – thay bằng thể lệ thật trước khi dùng với khách)
+        promo: {
+          label: 'Tặng tháng đầu',
+          freeFirstTerm: true,
+          autoRenew: true,
+          renewNote: 'Từ tháng thứ 2: 5,000đ/tháng, tự động gia hạn. Hủy bất cứ lúc nào.',
+          renewShort: 'Tự động, 5,000đ/tháng từ tháng thứ 2',
+          programName: 'Chương trình Tặng tháng đầu An toàn giao dịch',
+          terms: [
+            'Tặng 30 ngày đầu Bảo hiểm An toàn giao dịch gói Cơ bản, phí 0đ, quyền lợi đến 20,000,000đ.',
+            'Từ tháng thứ 2, hợp đồng tự động gia hạn mỗi 30 ngày, phí 5,000đ/tháng trừ từ tài khoản thanh toán.',
+            'Sacombank Pay gửi thông báo trước mỗi kỳ gia hạn 3 ngày.',
+            'Khách hàng tắt tự động gia hạn bất cứ lúc nào tại mục Bảo hiểm của tôi, không mất phí.',
+            'Mỗi khách hàng nhận ưu đãi một lần.'
+          ]
+        },
+        consentText: 'Tôi xác nhận đồng ý với điều khoản điều kiện, điều khoản của chương trình.'
+      },
       success: { enabled: true, productIds: ['accident', 'health'] }
     },
 
@@ -75,8 +94,8 @@
         icon: 'shield',
         color: '#0B56A4',
         tagline: 'Bồi thường khi bị lừa đảo, chiếm đoạt tài khoản ngân hàng',
-        offerText: 'Bảo vệ tài khoản trước lừa đảo trực tuyến trong 30 ngày',
-        badge: 'Chỉ 5.000đ',
+        offerText: 'Bảo vệ tài khoản trước lừa đảo trực tuyến',
+        badge: 'Tặng tháng đầu',
         plans: [
           { name: 'Cơ bản', premium: 5000, coverage: 20000000, term: 30 },
           { name: 'Nâng cao', premium: 15000, coverage: 50000000, term: 30 },

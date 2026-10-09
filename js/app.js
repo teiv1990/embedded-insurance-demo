@@ -96,7 +96,7 @@
       pid, screen: 'home', stack: [], hide: false,
       balance: p.customer.balance,
       form: blankForm(p),
-      addon: false,
+      addon: false, addonOk: false,
       otpFor: 'transfer', pin: '',
       txn: null,
       product: null, plan: 0, consent: false, productSrc: '',
@@ -123,9 +123,28 @@
     if (!S.on.confirm || !c) return null;
     const pr = prod(c.productId);
     if (!pr || owns(c.productId) || S.form.amount < (c.minAmount || 0)) return null;
-    const planIdx = c.planIndex || 0;
-    return { id: c.productId, pr, planIdx, plan: pr.plans[planIdx] };
+    const planIdx = c.planIndex || 0, plan = pr.plans[planIdx];
+    const promo = c.promo || null;
+    // charge: số tiền thu ngay cùng giao dịch (ưu đãi tặng kỳ đầu → 0đ); consent: câu khách phải tích trước khi xác nhận
+    return { id: c.productId, pr, planIdx, plan, promo, charge: promo && promo.freeFirstTerm ? 0 : plan.premium, consent: c.consentText || '' };
   }
+  const addonCharge = () => { const o = confirmOffer(); return o && S.addon ? o.charge : 0; };
+  const addonBlocked = () => { const o = confirmOffer(); return !!(o && S.addon && o.consent && !S.addonOk); };
+
+  /* Dòng phí và ô tích đồng ý của gợi ý bảo hiểm ở màn xác nhận – dùng chung cho màn mặc định và skin */
+  function offerPrice(o) {
+    if (!o.promo) return `Phí chỉ <b>${vnd(o.plan.premium)}</b> / ${o.plan.term} ngày`;
+    return `<span class="promo-tag">${esc(o.promo.label)}</span> <s>${vnd(o.plan.premium)}</s> <b>${vnd(o.charge)}</b> / ${o.plan.term} ngày đầu`;
+  }
+  function offerExtras(o) {
+    return `${o.promo && o.promo.renewNote ? `<div class="promo-note">${esc(o.promo.renewNote)}</div>` : ''}
+      ${S.addon && o.consent ? `
+      <button class="consent addon-consent ${S.addonOk ? 'on' : ''}" data-act="addonConsent" role="checkbox" aria-checked="${S.addonOk}">
+        <span class="cb">${S.addonOk ? svg('check', 14, 3.4) : ''}</span>
+        <span>${esc(o.consent)} <a data-act="promoTerms">Xem điều khoản</a></span>
+      </button>` : ''}`;
+  }
+  const confirmHint = () => (addonBlocked() ? '<div class="confirm-hint">Tích ô xác nhận đồng ý điều khoản để tiếp tục, hoặc bỏ chọn bảo hiểm.</div>' : '');
 
   function log(type, msg) {
     logs.push({ t: new Date(), type, msg });
@@ -363,7 +382,7 @@
 
   SCREENS.confirm = () => {
     const f = S.form, p = P(), o = confirmOffer();
-    const prem = o && S.addon ? o.plan.premium : 0;
+    const prem = addonCharge();
     return `
     <div class="scr">
       ${nav('Xác nhận giao dịch')}
@@ -394,20 +413,21 @@
             </div>
           </div>
           <div class="of">
-            <div class="op">Phí chỉ <b>${fmt(o.plan.premium)}đ</b> / ${o.plan.term} ngày</div>
+            <div class="op">${offerPrice(o)}</div>
             <button class="sw ${S.addon ? 'on' : ''}" data-act="toggleAddon" aria-label="Thêm bảo hiểm"></button>
           </div>
+          ${offerExtras(o)}
           <button class="more" data-act="addonInfo">Xem quyền lợi chi tiết</button>
           <div class="prov">Cung cấp bởi ${esc(INS().provider)} · ${esc(INS().distributorNote || '')}</div>
         </div>` : ''}
         <div class="card" style="margin-top:12px">
           <div class="rows">
-            ${prem ? `<div class="r"><span>Phí bảo hiểm</span><span>${vnd(prem)}</span></div>` : ''}
+            ${o && S.addon ? `<div class="r"><span>Phí bảo hiểm</span><span>${vnd(prem)}${o.promo ? ' (tặng kỳ đầu)' : ''}</span></div>` : ''}
             <div class="r total"><span>Tổng tiền</span><span>${vnd(f.amount + prem)}</span></div>
           </div>
         </div>
       </div>
-      <div class="footer"><button class="btn primary" data-act="doConfirm">Xác nhận</button></div>
+      <div class="footer">${confirmHint()}<button class="btn primary" data-act="doConfirm" ${addonBlocked() ? 'disabled' : ''}>Xác nhận</button></div>
     </div>`;
   };
 
@@ -419,7 +439,7 @@
       <div class="otp-wrap">
         <div class="otp-ic">${svg('lock', 34)}</div>
         <div class="otp-t">Nhập mã PIN Smart OTP</div>
-        <div class="otp-s">${isIns ? 'Xác thực thanh toán phí bảo hiểm' : 'Xác thực giao dịch chuyển tiền'}<br><b style="color:var(--text)">${vnd(isIns ? prod(S.product).plans[S.plan].premium : S.form.amount + ((confirmOffer() && S.addon) ? confirmOffer().plan.premium : 0))}</b></div>
+        <div class="otp-s">${isIns ? 'Xác thực thanh toán phí bảo hiểm' : 'Xác thực giao dịch chuyển tiền'}<br><b style="color:var(--text)">${vnd(isIns ? prod(S.product).plans[S.plan].premium : S.form.amount + addonCharge())}</b></div>
         <div class="dots" id="dots">${'<i></i>'.repeat(6)}</div>
         <div class="otp-hint">Demo: nhập 6 số bất kỳ</div>
       </div>
@@ -449,21 +469,22 @@
     setTimeout(S.otpFor === 'insurance' ? finishPurchase : finishTransfer, 1300);
   }
 
-  function createPolicy(productId, planIdx, src) {
+  function createPolicy(productId, planIdx, src, promo) {
     const pr = prod(productId), plan = pr.plans[planIdx];
     const start = new Date(), end = new Date(start.getTime() + plan.term * 86400000);
-    const pol = { productId, planIdx, no: 'EI' + start.getFullYear() + '-' + rnd(8), start, end, src, premium: plan.premium };
+    const paid = promo && promo.freeFirstTerm ? 0 : plan.premium;
+    const pol = { productId, planIdx, no: 'EI' + start.getFullYear() + '-' + rnd(8), start, end, src, premium: paid, promo: promo || null, autoRenew: !!(promo && promo.autoRenew) };
     S.policies.push(pol);
-    log('buy', `Mua "${pr.short}" (${plan.name}) ${fmt(plan.premium)}đ – ${src}`);
+    log('buy', promo ? `Nhận "${pr.short}" (${promo.label}) 0đ – ${src}` : `Mua "${pr.short}" (${plan.name}) ${fmt(plan.premium)}đ – ${src}`);
     return pol;
   }
 
   function finishTransfer() {
     const f = S.form, o = confirmOffer();
-    const prem = o && S.addon ? o.plan.premium : 0;
+    const prem = addonCharge();
     S.balance -= f.amount + prem;
     S.txn = { ...f, bankName: bankName(f.bank), time: new Date(), code: 'FT' + rnd(12), prem, policy: null };
-    if (prem) S.txn.policy = createPolicy(o.id, o.planIdx, 'Màn xác nhận');
+    if (o && S.addon) S.txn.policy = createPolicy(o.id, o.planIdx, 'Màn xác nhận', o.promo);
     S.stack = []; S.screen = 'success'; render();
   }
 
@@ -603,7 +624,7 @@
             <div>Người được BH<b>${esc(c.name)}</b></div>
             <div>Gói<b>${esc(plan.name)}</b></div>
             <div>Quyền lợi tối đa<b>${vnd(plan.coverage)}</b></div>
-            <div>Phí đã thanh toán<b>${vnd(plan.premium)}</b></div>
+            <div>Phí đã thanh toán<b>${vnd(pol.premium)}${pol.promo ? ' (quà tặng)' : ''}</b></div>
             <div>Hiệu lực từ<b>${dstr(pol.start)}</b></div>
             <div>Đến<b>${dstr(pol.end)}</b></div>
           </div>
@@ -613,8 +634,10 @@
             <div class="r"><span>Nhà bảo hiểm</span><span>${esc(INS().provider)}</span></div>
             <div class="r"><span>Kênh mua</span><span>${esc(P().appName)} · ${esc(pol.src)}</span></div>
             <div class="r"><span>Hotline bồi thường</span><span>1900 xxxx (24/7)</span></div>
+            ${pol.promo && pol.promo.autoRenew ? `<div class="r"><span>Gia hạn</span><span>${pol.autoRenew ? esc(pol.promo.renewShort) : 'Đã tắt tự động gia hạn'}</span></div>` : ''}
           </div>
         </div>
+        ${pol.promo && pol.autoRenew ? `<button class="btn outline" style="margin-top:12px" data-act="stopRenew" data-no="${pol.no}">Tắt tự động gia hạn</button>` : ''}
         <div class="btn-row" style="margin-top:14px">
           <button class="btn soft" data-act="toast" data-msg="Đã tải Giấy chứng nhận (PDF)">${svg('file', 18)} Tải GCN</button>
           <button class="btn outline" data-act="myPolicies">Bảo hiểm của tôi</button>
@@ -643,7 +666,7 @@
           <div><small>Số hợp đồng</small><b>${pol.no}</b></div>
           <div><small>Quyền lợi tối đa</small><b>${vnd(plan.coverage)}</b></div>
           <div><small>Hiệu lực</small><b>${dstr(pol.start)} – ${dstr(pol.end)}</b></div>
-          <div><small>Phí đã đóng</small><b>${vnd(pol.premium)}</b></div>
+          <div><small>Phí đã đóng</small><b>${vnd(pol.premium)}${pol.promo ? ' (tặng)' : ''}</b></div>
         </div>
         <div class="mp-bar"><i style="width:${used}%"></i></div>
         <div class="mp-left">Còn ${left} ngày bảo vệ</div>
@@ -723,13 +746,36 @@
     },
     toConfirm: () => {
       const c = INS().placements.confirm;
-      S.addon = !!(c && c.defaultChecked);
+      S.addon = !!(c && c.defaultChecked); S.addonOk = false;
       go('confirm');
     },
     toggleAddon: () => {
       const o = confirmOffer(); if (!o) return;
-      S.addon = !S.addon;
+      S.addon = !S.addon; S.addonOk = false;
       log(S.addon ? 'opt' : 'opt', `${S.addon ? 'Chọn' : 'Bỏ chọn'} "${o.pr.short}" – Màn xác nhận`);
+      render(true);
+      if (S.addon) requestAnimationFrame(() => { // đưa ô tích đồng ý vào tầm nhìn
+        const box = $('.addon-consent', app), body = box && box.closest('.body');
+        if (body) body.scrollTo({ top: body.scrollHeight, behavior: 'smooth' });
+      });
+    },
+    addonConsent: () => {
+      S.addonOk = !S.addonOk;
+      if (S.addonOk) log('opt', 'Tích đồng ý điều khoản chương trình – Màn xác nhận');
+      render(true);
+    },
+    promoTerms: () => {
+      const o = confirmOffer(); if (!o || !o.promo) return;
+      openSheet(o.promo.programName || 'Điều khoản chương trình', `
+        <ul class="benefits" style="margin:0 0 12px">${(o.promo.terms || []).map(t => `<li>${svg('check', 18, 2.6)}<span>${esc(t)}</span></li>`).join('')}</ul>
+        <div style="font-size:11.5px;color:var(--muted)">Sản phẩm do ${esc(INS().provider)} cung cấp. Quy tắc bảo hiểm và điều khoản loại trừ: xem tại "Xem quyền lợi chi tiết".</div>`);
+      log('view', 'Xem điều khoản chương trình – Màn xác nhận');
+    },
+    stopRenew: d => {
+      const pol = S.policies.find(x => x.no === d.no); if (!pol) return;
+      pol.autoRenew = false;
+      log('opt', `Tắt tự động gia hạn "${prod(pol.productId).short}"`);
+      toast('Đã tắt tự động gia hạn');
       render(true);
     },
     addonInfo: () => {
@@ -739,10 +785,10 @@
         <div class="card" style="background:var(--soft)"><div class="rows">
           <div class="r"><span>Quyền lợi tối đa</span><span>${vnd(o.plan.coverage)}</span></div>
           <div class="r"><span>Thời hạn</span><span>${o.plan.term} ngày</span></div>
-          <div class="r"><span>Phí bảo hiểm</span><span>${vnd(o.plan.premium)}</span></div>
+          <div class="r"><span>Phí bảo hiểm</span><span>${o.promo ? `${vnd(o.charge)} kỳ đầu, sau đó ${vnd(o.plan.premium)}/${o.plan.term} ngày` : vnd(o.plan.premium)}</span></div>
         </div></div>
         <ul class="benefits" style="margin:10px 0 14px">${o.pr.benefits.map(b => `<li>${svg('check', 18, 2.6)}<span>${esc(b)}</span></li>`).join('')}</ul>
-        <button class="btn primary" data-act="addonYes">${S.addon ? 'Đã thêm vào giao dịch' : `Thêm vào giao dịch · ${fmt(o.plan.premium)}đ`}</button>
+        <button class="btn primary" data-act="addonYes">${S.addon ? 'Đã thêm vào giao dịch' : (o.promo ? `Nhận ${o.promo.label.toLowerCase()}` : `Thêm vào giao dịch · ${fmt(o.plan.premium)}đ`)}</button>
         <div style="font-size:10.5px;color:var(--muted);text-align:center;margin-top:10px">Cung cấp bởi ${esc(INS().provider)}. Bằng việc chọn, bạn đồng ý với Quy tắc bảo hiểm.</div>`);
       log('view', `Xem chi tiết "${o.pr.short}" – Màn xác nhận`);
     },
@@ -750,7 +796,10 @@
       if (!S.addon) { S.addon = true; log('opt', `Chọn "${confirmOffer().pr.short}" – Màn xác nhận`); }
       render(true);
     },
-    doConfirm: () => { S.otpFor = 'transfer'; S.pin = ''; go('otp'); },
+    doConfirm: () => {
+      if (addonBlocked()) { toast('Vui lòng tích xác nhận đồng ý điều khoản chương trình'); return; }
+      S.otpFor = 'transfer'; S.pin = ''; go('otp');
+    },
     key: d => pressKey(d.k),
 
     newTransfer: () => { S.form = blankForm(P()); S.stack = ['home']; S.screen = 'transfer'; render(); },
@@ -806,7 +855,7 @@
    * Màn hình nào skin không định nghĩa thì dùng màn hình chung ở trên. */
   const KIT = {
     get S() { return S; }, P, INS, prod, svg, ICONS, esc, fmt, vnd, readVN, dstr, tstr, initials, shade, bankName, owns,
-    confirmOffer, xsCard, go, back, goHome, render, toast, openSheet, closeSheet, log, processing, lookup, SCREENS, BIND, A
+    confirmOffer, addonCharge, addonBlocked, offerPrice, offerExtras, confirmHint, xsCard, go, back, goHome, render, toast, openSheet, closeSheet, log, processing, lookup, SCREENS, BIND, A
   };
   const SKINS = {};
   Object.entries(window.SKINS || {}).forEach(([k, make]) => { SKINS[k] = make(KIT); });
