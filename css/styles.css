@@ -115,7 +115,7 @@ body.present .panel { margin-left: -320px; }
 .statusbar {
   position: absolute; top: 0; left: 0; right: 0; height: 54px; z-index: 40;
   display: flex; justify-content: space-between; align-items: center; padding: 6px 30px 0 44px;
-  font-weight: 600; font-size: 16px; color: #fff; pointer-events: none;
+  font-weight: 600; font-size: 16px; color: var(--sbc, #fff); pointer-events: none;
   background: var(--sbg, var(--pd)); transition: background .2s;
 }
 .statusbar svg { fill: currentColor; }

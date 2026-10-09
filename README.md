@@ -40,3 +40,13 @@ Các trường chính trong profile:
 | `insurance.provider` | Tên công ty bảo hiểm hiển thị trong app |
 | `insurance.placements` | Bật/tắt từng điểm chạm, chọn sản phẩm cho mỗi điểm, `minAmount` = số tiền tối thiểu để hiện offer ở màn xác nhận, `defaultChecked` = bật sẵn |
 | `insurance.products` | Sản phẩm: tên, icon (`shield`, `heart`, `activity`), màu, các gói (phí, quyền lợi, số ngày hiệu lực), quyền lợi |
+
+## Giao diện riêng theo đối tác (skin)
+
+Mặc định mọi profile dùng chung một bố cục và chỉ đổi màu. Đối tác nào cần bố cục giống app thật thì khai báo `skin` trong profile:
+
+- `profiles/sacombank.js` khai báo `skin: 'sacombank'`, `numberLocale: 'en-US'` và `currencySuffix: 'đ'` để hiện số dạng `5,000đ`.
+- `js/skin-sacombank.js` vẽ lại 4 màn Trang chủ, Chuyển tiền, Xác nhận (bảng trượt từ dưới lên) và Xác thực (nhấn xác nhận, không nhập PIN). Các màn còn lại dùng màn hình chung.
+- `css/skin-sacombank.css` chứa kiểu dáng của skin.
+
+Thêm skin mới: tạo `js/skin-<tên>.js` đăng ký `window.SKINS['<tên>']`, tạo file CSS tương ứng và nạp cả hai trong `index.html` trước `js/app.js`.

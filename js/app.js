@@ -49,8 +49,9 @@
   const svg = (n, s = 22, sw = 2) =>
     `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${ICONS[n] || ''}</svg>`;
 
-  const fmt = n => Math.round(n || 0).toLocaleString('vi-VN');
-  const vnd = n => fmt(n) + ' VND';
+  /* Định dạng số theo profile: numberLocale (mặc định vi-VN) và currencySuffix (mặc định " VND") */
+  const fmt = n => Math.round(n || 0).toLocaleString((S && P().numberLocale) || 'vi-VN');
+  const vnd = n => fmt(n) + ((S && P().currencySuffix) || ' VND');
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const pad2 = n => String(n).padStart(2, '0');
   const dstr = d => `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}/${d.getFullYear()}`;
@@ -139,14 +140,18 @@
     closeSheet();
     const prevBody = $('.body', app);
     const scroll = quiet && prevBody ? prevBody.scrollTop : 0;
-    app.innerHTML = SCREENS[S.screen]();
+    const sk = skin();
+    app.innerHTML = ((sk.screens && sk.screens[S.screen]) || SCREENS[S.screen])(quiet);
     const root = app.firstElementChild;
     if (quiet && root) {
       root.style.animation = 'none';
       const b = $('.body', app); if (b) b.scrollTop = scroll;
     }
-    screenEl.style.setProperty('--sbg', S.screen === 'product' ? prod(S.product).color : 'var(--pd)');
-    if (BIND[S.screen]) BIND[S.screen]();
+    const st = (sk.status && sk.status[S.screen]) || {};
+    screenEl.style.setProperty('--sbg', S.screen === 'product' ? prod(S.product).color : st.bg || 'var(--pd)');
+    screenEl.style.setProperty('--sbc', st.color || '#fff');
+    const bind = (sk.bind && sk.bind[S.screen]) || BIND[S.screen];
+    if (bind) bind();
     if (!quiet) trackView();
     renderSteps();
     notifyParent({ screen: S.screen });
@@ -427,9 +432,9 @@
   };
 
   function pressKey(k) {
+    const dots = $('#dots'); if (!dots) return;
     if (S.pin.length >= 6 && k !== 'del') return;
     S.pin = k === 'del' ? S.pin.slice(0, -1) : S.pin + k;
-    const dots = $('#dots'); if (!dots) return;
     [...dots.children].forEach((d, i) => d.classList.toggle('f', i < S.pin.length));
     if (S.pin.length === 6) setTimeout(processing, 180);
   }
@@ -512,7 +517,7 @@
           </div>
           ${xs.length ? `
           <div class="xsell">
-            <div class="xs-h"><span class="spark">${svg('spark', 18)}</span>Dành riêng cho ${esc(p.customer.name.split(' ').slice(-1)[0])}</div>
+            <div class="xs-h"><span class="spark">${svg('spark', 18)}</span>Dành riêng cho ${esc(p.customer.greetName || p.customer.name.split(' ').slice(-1)[0])}</div>
             ${xs.map(id => xsCard(id, 'Màn thành công')).join('')}
           </div>` : ''}
           <div class="btn-row" style="margin-top:14px">
@@ -731,12 +736,23 @@
     }
   };
 
+  /* ---------------- skin riêng theo đối tác ----------------
+   * Profile khai báo `skin: '<tên>'`; file js/skin-<tên>.js đăng ký window.SKINS[<tên>] = kit => ({ screens, bind, actions, status }).
+   * Màn hình nào skin không định nghĩa thì dùng màn hình chung ở trên. */
+  const KIT = {
+    get S() { return S; }, P, INS, prod, svg, ICONS, esc, fmt, vnd, readVN, dstr, tstr, initials, shade, bankName, owns,
+    confirmOffer, xsCard, go, back, goHome, render, toast, openSheet, closeSheet, log, processing, lookup, SCREENS, BIND, A
+  };
+  const SKINS = {};
+  Object.entries(window.SKINS || {}).forEach(([k, make]) => { SKINS[k] = make(KIT); });
+  function skin() { return SKINS[P().skin] || {}; }
+
   screenEl.addEventListener('click', e => {
     if (!notifyParent.touched) { notifyParent.touched = true; notifyParent({ interact: true }); }
     if (e.target === backdrop) { closeSheet(); return; }
     const el = e.target.closest('[data-act]');
     if (!el || el.disabled) return;
-    const fn = A[el.dataset.act];
+    const fn = (skin().actions || {})[el.dataset.act] || A[el.dataset.act];
     if (fn) { e.preventDefault(); fn(el.dataset, el); }
   });
 
@@ -792,6 +808,7 @@
     const set = (k, v) => v && screenEl.style.setProperty(k, v);
     set('--p', t.primary); set('--pd', t.primaryDark); set('--ac', t.accent); set('--soft', t.soft);
     set('--hero', t.hero || t.primary);
+    screenEl.dataset.skin = P().skin || '';
     document.title = `${P().appName} · Embedded Insurance Demo`;
     $('#demoNote').textContent = `BẢN DEMO minh họa – không phải ứng dụng chính thức của ${P().name.split(' – ')[0]}`;
   }
