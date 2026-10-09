@@ -4,7 +4,7 @@
  * Các màn còn lại (thành công, sản phẩm, GCN, mục Bảo hiểm) dùng màn hình chung, đổi kiểu qua css/skin-sacombank.css.
  */
 (window.SKINS = window.SKINS || {}).sacombank = function (K) {
-  const { P, INS, prod, svg, esc, fmt, vnd, bankName, initials, confirmOffer, addonCharge, addonBlocked, offerPrice, offerExtras, confirmHint } = K;
+  const { P, INS, prod, svg, esc, fmt, vnd, bankName, initials, confirmOffer, addonCharge, addonBlocked, offerPrice, offerExtras } = K;
 
   Object.assign(K.ICONS, {
     cardF: '<rect x="2" y="5" width="20" height="14" rx="2" fill="currentColor" stroke="none"/><rect x="2" y="8.6" width="20" height="2.8" fill="#fff" stroke="none" opacity=".9"/><rect x="4.5" y="14" width="5.5" height="2.2" rx=".6" fill="#fff" stroke="none"/>',
@@ -158,7 +158,7 @@
           ${o && S.addon ? `<div class="r"><span>Phí bảo hiểm</span><span>${money(prem)}${o.promo ? ' (tặng kỳ đầu)' : ''}</span></div>` : ''}
         </div>
         <div class="sc-rows sc-total"><div class="r total"><span>Tổng số tiền</span><span>${money(f.amount + prem)}</span></div></div>
-        <div class="sc-sheet-f">${confirmHint()}<button class="btn primary" data-act="doConfirm" ${addonBlocked() ? 'disabled' : ''}>Xác nhận</button></div>
+        <div class="sc-sheet-f"><button class="btn primary" data-act="doConfirm" ${addonBlocked() ? 'disabled' : ''}>Xác nhận</button></div>
       </div>
     </div>`;
   }

@@ -144,7 +144,6 @@
         <span>${esc(o.consent)} <a data-act="promoTerms">Xem điều khoản</a></span>
       </button>` : ''}`;
   }
-  const confirmHint = () => (addonBlocked() ? '<div class="confirm-hint">Tích ô xác nhận đồng ý điều khoản để tiếp tục, hoặc bỏ chọn bảo hiểm.</div>' : '');
 
   function log(type, msg) {
     logs.push({ t: new Date(), type, msg });
@@ -427,7 +426,7 @@
           </div>
         </div>
       </div>
-      <div class="footer">${confirmHint()}<button class="btn primary" data-act="doConfirm" ${addonBlocked() ? 'disabled' : ''}>Xác nhận</button></div>
+      <div class="footer"><button class="btn primary" data-act="doConfirm" ${addonBlocked() ? 'disabled' : ''}>Xác nhận</button></div>
     </div>`;
   };
 
@@ -746,12 +745,12 @@
     },
     toConfirm: () => {
       const c = INS().placements.confirm;
-      S.addon = !!(c && c.defaultChecked); S.addonOk = false;
+      S.addon = !!(c && c.defaultChecked); S.addonOk = !!(c && c.consentDefault);
       go('confirm');
     },
     toggleAddon: () => {
       const o = confirmOffer(); if (!o) return;
-      S.addon = !S.addon; S.addonOk = false;
+      S.addon = !S.addon; S.addonOk = !!INS().placements.confirm.consentDefault;   // ô tích đồng ý: tích sẵn nếu profile đặt consentDefault
       log(S.addon ? 'opt' : 'opt', `${S.addon ? 'Chọn' : 'Bỏ chọn'} "${o.pr.short}" – Màn xác nhận`);
       render(true);
       if (S.addon) requestAnimationFrame(() => { // đưa ô tích đồng ý vào tầm nhìn
@@ -855,7 +854,7 @@
    * Màn hình nào skin không định nghĩa thì dùng màn hình chung ở trên. */
   const KIT = {
     get S() { return S; }, P, INS, prod, svg, ICONS, esc, fmt, vnd, readVN, dstr, tstr, initials, shade, bankName, owns,
-    confirmOffer, addonCharge, addonBlocked, offerPrice, offerExtras, confirmHint, xsCard, go, back, goHome, render, toast, openSheet, closeSheet, log, processing, lookup, SCREENS, BIND, A
+    confirmOffer, addonCharge, addonBlocked, offerPrice, offerExtras, xsCard, go, back, goHome, render, toast, openSheet, closeSheet, log, processing, lookup, SCREENS, BIND, A
   };
   const SKINS = {};
   Object.entries(window.SKINS || {}).forEach(([k, make]) => { SKINS[k] = make(KIT); });

@@ -82,7 +82,8 @@
             'Mỗi khách hàng nhận ưu đãi một lần.'
           ]
         },
-        consentText: 'Tôi xác nhận đồng ý với điều khoản điều kiện, điều khoản của chương trình.'
+        consentText: 'Tôi xác nhận đồng ý với điều khoản điều kiện, điều khoản của chương trình.',
+        consentDefault: true   // tích sẵn ô đồng ý khi khách bật bảo hiểm
       },
       success: { enabled: true, productIds: ['accident', 'health'] }
     },
