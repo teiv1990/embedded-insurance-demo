@@ -7,6 +7,8 @@
   const { P, INS, prod, svg, esc, fmt, vnd, bankName, initials, confirmOffer } = K;
 
   Object.assign(K.ICONS, {
+    cardF: '<rect x="2" y="5" width="20" height="14" rx="2" fill="currentColor" stroke="none"/><rect x="2" y="8.6" width="20" height="2.8" fill="#fff" stroke="none" opacity=".9"/><rect x="4.5" y="14" width="5.5" height="2.2" rx=".6" fill="#fff" stroke="none"/>',
+    piggyF: '<path d="M4 12a7 6 0 0113-3.5L20 8v4h1v3h-2a7 7 0 01-3 3v3h-3v-2h-3v2H7v-3.5A6 6 0 014 12z" fill="currentColor"/><circle cx="15" cy="12" r=".9" fill="#fff" stroke="none"/><circle cx="6" cy="4.2" r="2.7" fill="#F37021" stroke="none"/>',
     compass: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
     swap: '<circle cx="12" cy="12" r="9"/><path d="M8 10h8l-2.5-2.5M16 14H8l2.5 2.5"/>',
     chart: '<path d="M4 20V12M9 20V8M14 20v-6"/><circle cx="18.5" cy="16.5" r="3.5"/><path d="M14 6l3-3 3 3M17 3v6"/>',
@@ -39,30 +41,14 @@
             <button class="sc-ava" data-act="toast" aria-label="Cá nhân">${svg('user', 26, 2)}</button>
           </div>
           <div class="sc-greet">${greeting()}, ${esc(firstName())}!</div>
-          <div class="sc-promo">
-            <div class="sc-promo-h"><small>MỞ TÀI KHOẢN</small><b>LỢI SUẤT CAO</b></div>
-            <div class="sc-promo-cards">
-              <div class="pc"><span>TỰ ĐỘNG<br>SINH LỜI</span><b><i>đến</i>6%</b></div>
-              <div class="pc"><span>ĐẦU TƯ<br>TĂNG TRƯỞNG</span>
-                <div class="two"><em>1 THÁNG<b>8%</b></em><em>6 THÁNG<b>10.2%</b></em></div>
-              </div>
-            </div>
-          </div>
         </div>
 
         <div class="sc-tiles">
-          <button class="sc-tile or" data-act="toast"><span class="ti">${svg('card', 26)}</span>Quản lý thẻ<br>và tài khoản</button>
-          <button class="sc-tile bl" data-act="toast"><span class="ti">${svg('piggy', 26)}</span>Tiết kiệm</button>
-          <button class="sc-tile bl" data-act="go" data-to="transfer"><span class="ti">${svg('money', 26)}</span>Chuyển tiền</button>
+          <button class="sc-tile or" data-act="toast"><span class="ti">${svg('cardF', 28)}</span>Quản lý thẻ<br>và tài khoản</button>
+          <button class="sc-tile bl" data-act="toast"><span class="ti">${svg('piggyF', 28)}</span>Tiết kiệm</button>
+          <button class="sc-tile bl" data-act="go" data-to="transfer"><span class="ti">${svg('money', 28, 2.2)}</span>Chuyển tiền</button>
           <button class="sc-tile or" data-act="toast"><span class="ti new">New</span>Sinh lời Tài Lộc</button>
         </div>
-
-        ${hprod ? `
-        <button class="sc-insbar" data-act="openProduct" data-id="${hp.productId}" data-src="Trang chủ">
-          <span class="ii" style="background:${hprod.color}">${svg(hprod.icon, 22)}</span>
-          <span class="it"><b>${esc(hprod.name)}</b><small>${esc(hprod.tagline)}</small></span>
-          ${hprod.badge ? `<span class="ib">${esc(hprod.badge)}</span>` : svg('chev', 18)}
-        </button>` : ''}
 
         <div class="sc-svc">
           <button data-act="toast"><span class="si">${svg('chart', 26)}</span>Đầu tư</button>
@@ -72,9 +58,9 @@
         </div>
       </div>
       <div class="sc-tab">
-        <button data-act="toast">${svg('compass', 30, 1.8)}Khám phá</button>
+        <button data-act="toast">${svg('compass', 32, 1.7)}Khám phá</button>
         <button class="mid" data-act="toast"><span class="qr">${svg('qr', 28, 2)}</span>Truy cập nhanh</button>
-        <button data-act="go" data-to="transfer">${svg('swap', 30, 1.8)}Giao dịch</button>
+        <button data-act="go" data-to="transfer">${svg('swap', 32, 1.7)}Giao dịch</button>
       </div>
     </div>`;
   }

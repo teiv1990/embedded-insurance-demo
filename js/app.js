@@ -101,6 +101,7 @@
       txn: null,
       product: null, plan: 0, consent: false, productSrc: '',
       policies: [], viewPolicy: null, policyFresh: false,
+      hubTab: 'mine', claims: [],
       on: {
         home: !!(pl.home && pl.home.enabled !== false),
         confirm: !!(pl.confirm && pl.confirm.enabled !== false),
@@ -616,7 +617,7 @@
         </div>
         <div class="btn-row" style="margin-top:14px">
           <button class="btn soft" data-act="toast" data-msg="Đã tải Giấy chứng nhận (PDF)">${svg('file', 18)} Tải GCN</button>
-          <button class="btn outline" data-act="go" data-to="hub">Bảo hiểm của tôi</button>
+          <button class="btn outline" data-act="myPolicies">Bảo hiểm của tôi</button>
         </div>
       </div>
       <div class="footer"><button class="btn primary" data-act="home">Về trang chủ</button></div>
@@ -624,27 +625,62 @@
   };
 
   SCREENS.hub = () => {
-    const ins = INS();
+    const ins = INS(), mine = S.hubTab !== 'shop', now = Date.now();
+    const totalCover = S.policies.reduce((t, pol) => t + prod(pol.productId).plans[pol.planIdx].coverage, 0);
+    const polCard = pol => {
+      const pr = prod(pol.productId), plan = pr.plans[pol.planIdx];
+      const left = Math.max(0, Math.ceil((pol.end - now) / 86400000));
+      const used = Math.min(100, Math.max(2, Math.round((now - pol.start) / (pol.end - pol.start) * 100)));
+      const claim = S.claims.find(c => c.policyNo === pol.no);
+      return `
+      <div class="mp" style="--c:${pr.color}">
+        <div class="mp-h">
+          <span class="mp-i">${svg(pr.icon, 22)}</span>
+          <span class="mp-t"><b>${esc(pr.name)}</b><small>Gói ${esc(plan.name)} · ${esc(ins.provider)}</small></span>
+          <span class="mp-st">Đang hiệu lực</span>
+        </div>
+        <div class="mp-g">
+          <div><small>Số hợp đồng</small><b>${pol.no}</b></div>
+          <div><small>Quyền lợi tối đa</small><b>${vnd(plan.coverage)}</b></div>
+          <div><small>Hiệu lực</small><b>${dstr(pol.start)} – ${dstr(pol.end)}</b></div>
+          <div><small>Phí đã đóng</small><b>${vnd(pol.premium)}</b></div>
+        </div>
+        <div class="mp-bar"><i style="width:${used}%"></i></div>
+        <div class="mp-left">Còn ${left} ngày bảo vệ</div>
+        ${claim ? `<div class="mp-claim">${svg('clock', 16)}<span>Yêu cầu bồi thường <b>${claim.no}</b> đang được xử lý, dự kiến phản hồi trong 5 ngày làm việc.</span></div>` : ''}
+        <div class="mp-act">
+          <button data-act="viewPolicy" data-no="${pol.no}">${svg('file', 17)} Giấy chứng nhận</button>
+          <button data-act="claim" data-no="${pol.no}" ${claim ? 'disabled' : ''}>${svg('shield', 17)} Yêu cầu bồi thường</button>
+        </div>
+      </div>`;
+    };
     return `
     <div class="scr">
       ${nav('Bảo hiểm')}
       <div class="body pad">
-        <div class="card">
-          <div class="lbl">Hợp đồng của tôi</div>
-          ${S.policies.length ? S.policies.map(pol => {
-            const pr = prod(pol.productId);
-            return `<button class="pol" data-act="viewPolicy" data-no="${pol.no}" style="width:100%;text-align:left">
-              <span class="pi" style="background:${pr.color}">${svg(pr.icon, 20)}</span>
-              <span><div class="pt">${esc(pr.name)}</div><div class="ps">${pol.no} · đến ${dstr(pol.end)}</div></span>
-              <span class="st">Hiệu lực</span>
-            </button>`;
-          }).join('') : '<div class="empty-s">Bạn chưa có hợp đồng bảo hiểm nào</div>'}
+        <div class="seg" style="margin-top:0">
+          <button class="${mine ? 'on' : ''}" data-act="hubTab" data-tab="mine">Bảo hiểm của tôi${S.policies.length ? ` (${S.policies.length})` : ''}</button>
+          <button class="${mine ? '' : 'on'}" data-act="hubTab" data-tab="shop">Sản phẩm</button>
         </div>
-        <div class="xsell">
-          <div class="xs-h">Sản phẩm bảo hiểm</div>
+        ${mine ? (S.policies.length ? `
+        <div class="mp-sum">
+          <span class="ms-i">${svg('shield', 26)}</span>
+          <div><small>Bạn đang được bảo vệ</small><b>${S.policies.length} hợp đồng đang hiệu lực</b></div>
+          <div class="ms-r"><small>Tổng quyền lợi</small><b>${vnd(totalCover)}</b></div>
+        </div>
+        ${S.policies.slice().reverse().map(polCard).join('')}
+        <button class="mp-more" data-act="hubTab" data-tab="shop">${svg('spark', 16)} Xem thêm sản phẩm bảo hiểm</button>` : `
+        <div class="mp-empty">
+          <span>${svg('shield', 40, 1.6)}</span>
+          <b>Bạn chưa có hợp đồng bảo hiểm</b>
+          <p>Hợp đồng mua trong ứng dụng sẽ hiện ở đây, kèm giấy chứng nhận điện tử và yêu cầu bồi thường trực tuyến.</p>
+          <button class="btn primary" data-act="hubTab" data-tab="shop">Khám phá sản phẩm</button>
+        </div>`) : `
+        <div class="xsell" style="margin-top:0">
           ${Object.keys(ins.products).map(id => xsCard(id, 'Mục Bảo hiểm')).join('')}
-        </div>
-        <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px">Sản phẩm được cung cấp bởi ${esc(ins.provider)}</div>
+        </div>`}
+        <button class="mp-help" data-act="toast" data-msg="Tổng đài chỉ minh họa trong bản demo">${svg('phone', 18)}<span>Cần hỗ trợ bồi thường?<small>Gọi tổng đài 1900 xxxx (24/7)</small></span>${svg('chev', 18)}</button>
+        <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px">Sản phẩm được cung cấp bởi ${esc(ins.provider)}</div>
       </div>
     </div>`;
   };
@@ -729,6 +765,35 @@
       if (!S.consent) return;
       if (prod(S.product).plans[S.plan].premium > S.balance) { toast('Số dư không đủ'); return; }
       S.otpFor = 'insurance'; S.pin = ''; go('otp');
+    },
+    hubTab: d => { S.hubTab = d.tab; render(true); },
+    myPolicies: () => { S.hubTab = 'mine'; go('hub'); },
+    claim: d => {
+      const pol = S.policies.find(x => x.no === d.no); if (!pol) return;
+      const pr = prod(pol.productId);
+      const reasons = ['Bị lừa đảo, mất tiền', 'Tai nạn', 'Ốm đau, nằm viện', 'Lý do khác'];
+      openSheet('Yêu cầu bồi thường', `
+        <div class="card" style="background:var(--soft)"><div class="rows">
+          <div class="r"><span>Sản phẩm</span><span>${esc(pr.name)}</span></div>
+          <div class="r"><span>Số hợp đồng</span><span>${pol.no}</span></div>
+          <div class="r"><span>Người được bảo hiểm</span><span>${esc(P().customer.name)}</span></div>
+        </div></div>
+        <div class="lbl" style="margin-top:14px">Sự kiện bảo hiểm</div>
+        <div class="chips" id="claimReasons">${reasons.map((r, i) => `<button class="chip ${i ? '' : 'sel'}" data-act="claimReason">${r}</button>`).join('')}</div>
+        <div class="field"><label for="claimNote">Mô tả ngắn</label><textarea id="claimNote" rows="2" placeholder="Thời gian, địa điểm, diễn biến"></textarea></div>
+        <button class="field" data-act="toast" data-msg="Tải chứng từ chỉ minh họa trong bản demo"><span class="fl">Chứng từ</span><span class="fv ph">Chụp hoặc tải ảnh hóa đơn, biên bản ${svg('chev', 18)}</span></button>
+        <button class="btn primary" data-act="claimSend" data-no="${pol.no}">Gửi yêu cầu</button>`);
+    },
+    claimReason: (d, el) => {
+      el.parentNode.querySelectorAll('.chip').forEach(c => c.classList.toggle('sel', c === el));
+    },
+    claimSend: d => {
+      const pol = S.policies.find(x => x.no === d.no);
+      const c = { no: 'BT' + rnd(8), policyNo: d.no, time: new Date() };
+      S.claims.push(c);
+      log('claim', `Gửi yêu cầu bồi thường ${c.no} – "${prod(pol.productId).short}"`);
+      render(true);
+      toast('Đã gửi yêu cầu bồi thường');
     },
     viewPolicy: d => {
       S.viewPolicy = S.policies.find(x => x.no === d.no); S.policyFresh = false;
