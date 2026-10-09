@@ -65,7 +65,7 @@
     placements: {
       home:    { enabled: true, productId: 'health' },
       confirm: {
-        enabled: true, productId: 'cyber', minAmount: 0, defaultChecked: false,
+        enabled: true, productId: 'cyber', minAmount: 0, defaultChecked: true,   // công tắc bảo hiểm bật sẵn
         // Chương trình tặng kỳ đầu (số liệu, điều khoản giả định – thay bằng thể lệ thật trước khi dùng với khách)
         promo: {
           label: 'Tặng tháng đầu',
@@ -83,7 +83,7 @@
           ]
         },
         consentText: 'Tôi xác nhận đồng ý với điều khoản điều kiện, điều khoản của chương trình.',
-        consentDefault: true   // tích sẵn ô đồng ý khi khách bật bảo hiểm
+        consentDefault: false   // ô đồng ý để trống, khách tự tích
       },
       success: { enabled: true, productIds: ['accident', 'health'] }
     },

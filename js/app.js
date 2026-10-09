@@ -707,6 +707,12 @@
     </div>`;
   };
 
+  // Đưa ô tích đồng ý vào tầm nhìn
+  function showConsent() {
+    const box = $('.addon-consent', app), body = box && box.closest('.body');
+    if (body) body.scrollTo({ top: body.scrollHeight, behavior: 'smooth' });
+  }
+
   /* ---------------- actions ---------------- */
   const A = {
     back, home: goHome,
@@ -747,16 +753,14 @@
       const c = INS().placements.confirm;
       S.addon = !!(c && c.defaultChecked); S.addonOk = !!(c && c.consentDefault);
       go('confirm');
+      if (S.addon) setTimeout(showConsent, 350);   // chờ bảng xác nhận trượt lên xong
     },
     toggleAddon: () => {
       const o = confirmOffer(); if (!o) return;
       S.addon = !S.addon; S.addonOk = !!INS().placements.confirm.consentDefault;   // ô tích đồng ý: tích sẵn nếu profile đặt consentDefault
       log(S.addon ? 'opt' : 'opt', `${S.addon ? 'Chọn' : 'Bỏ chọn'} "${o.pr.short}" – Màn xác nhận`);
       render(true);
-      if (S.addon) requestAnimationFrame(() => { // đưa ô tích đồng ý vào tầm nhìn
-        const box = $('.addon-consent', app), body = box && box.closest('.body');
-        if (body) body.scrollTo({ top: body.scrollHeight, behavior: 'smooth' });
-      });
+      if (S.addon) requestAnimationFrame(showConsent);
     },
     addonConsent: () => {
       S.addonOk = !S.addonOk;
