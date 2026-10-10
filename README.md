@@ -48,6 +48,5 @@ Mặc định mọi profile dùng chung một bố cục và chỉ đổi màu. 
 - `profiles/sacombank.js` khai báo `skin: 'sacombank'`, `numberLocale: 'en-US'` và `currencySuffix: 'đ'` để hiện số dạng `5,000đ`.
 - `js/skin-sacombank.js` vẽ lại 4 màn Trang chủ, Chuyển tiền, Xác nhận (bảng trượt từ dưới lên) và Xác thực (nhấn xác nhận, không nhập PIN). Các màn còn lại dùng màn hình chung.
 - `css/skin-sacombank.css` chứa kiểu dáng của skin.
-- `profiles/sacombank-v2.js` là bản Sacombank bảo hiểm tích sẵn (`?partner=sacombank-v2`): dùng lại toàn bộ profile `sacombank`, chỉ bỏ ô tích đồng ý điều khoản ở màn xác nhận.
 
 Thêm skin mới: tạo `js/skin-<tên>.js` đăng ký `window.SKINS['<tên>']`, tạo file CSS tương ứng và nạp cả hai trong `index.html` trước `js/app.js`.
